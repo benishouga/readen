@@ -1,8 +1,6 @@
 import React from "react";
-import { useStorage } from "../chrome-ext-hooks";
 import { Converter } from "../lib/converter";
-
-const colors = ["red", "blue", "green"];
+import { useReadenStorage } from "../storage";
 
 const readFileText = async (file: File) =>
   new Promise<string>((resolve) => {
@@ -14,7 +12,7 @@ const readFileText = async (file: File) =>
   });
 
 export function OptionsApp() {
-  const { storage, updateStorage } = useStorage();
+  const { storage, updateStorage, clearStorage } = useReadenStorage();
   const handler = async (files: FileList | null) => {
     if (files && files[0]) {
       console.time("readFileText");
@@ -22,32 +20,23 @@ export function OptionsApp() {
       console.timeEnd("readFileText");
       console.time("convert");
       const conveter = new Converter();
-      await conveter.convert(text);
+      const dic = await conveter.convert(text);
       console.timeEnd("convert");
+      console.time("updateStorage");
+      await updateStorage(dic);
+      console.timeEnd("updateStorage");
     }
   };
-
+  console.log("OptionsApp's storage", storage);
   return (
     <div>
-      <p>
-        eijiro: <input type="file" onChange={(e) => handler(e.target.files)} />
-      </p>
-      Select color:
-      <br />
-      {colors.map((color) => (
-        <span key={color}>
-          <label>
-            <input
-              type="radio"
-              value={color}
-              checked={storage?.selectedColor === color}
-              onChange={() => updateStorage({ selectedColor: color })}
-            />
-            {color}
-          </label>
-          <br />
-        </span>
-      ))}
+      {!storage ? (
+        <p>
+          eijiro: <input type="file" onChange={(e) => handler(e.target.files)} />
+        </p>
+      ) : (
+        <button onClick={clearStorage}>clear</button>
+      )}
     </div>
   );
 }

@@ -22,13 +22,8 @@ export type Additional = {
 };
 
 export class Converter {
-  private currentDictionary?: Map<string, MeaningRow[]>;
-
+  private dictionary: Map<string, MeaningRow[]> = new Map();
   private indexes: Map<string, string[]> = new Map();
-
-  constructor() {
-    this.currentDictionary = new Map();
-  }
 
   async convert(text: string) {
     await text
@@ -36,6 +31,7 @@ export class Converter {
       .filter((line) => line)
       .map((line) => async () => this.addRow(line))
       .reduce((promise, next) => promise.then(next), Promise.resolve());
+    return { dictionary: this.dictionary, indexes: this.indexes };
   }
 
   private async addRow(line: string) {
@@ -56,13 +52,13 @@ export class Converter {
   }
 
   private getHolder(word: string) {
-    if (!this.currentDictionary) {
+    if (!this.dictionary) {
       throw new Error();
     }
-    let meanings = this.currentDictionary.get(word);
+    let meanings = this.dictionary.get(word);
     if (!meanings) {
       meanings = [];
-      this.currentDictionary.set(word, meanings);
+      this.dictionary.set(word, meanings);
     }
     return meanings;
   }
