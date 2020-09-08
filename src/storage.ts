@@ -19,7 +19,7 @@ export function useReadenStorage(): {
     const dictionary: Map<string, MeaningRow[]> = new Map();
     const indexes: Map<string, string[]> = new Map();
     try {
-      if (storage) {
+      if (storage && storage.dictionary && storage.indexes) {
         JSON.parse(storage.dictionary).map(([key, value]: any) => dictionary.set(key, value));
         JSON.parse(storage.indexes).map(([key, value]: any) => indexes.set(key, value));
         console.timeEnd("parsedStorage");

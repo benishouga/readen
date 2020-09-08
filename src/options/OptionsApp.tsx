@@ -35,7 +35,9 @@ export function OptionsApp() {
           eijiro: <input type="file" onChange={(e) => handler(e.target.files)} />
         </p>
       ) : (
-        <button onClick={clearStorage}>clear</button>
+        <button type="button" onClick={clearStorage}>
+          clear
+        </button>
       )}
     </div>
   );

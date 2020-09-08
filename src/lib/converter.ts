@@ -89,10 +89,7 @@ export class Converter {
   }
 
   private extractOther(other: string) {
-    const extracted = extractRepeat(
-      /(?:◆(?<remarks>[^■◆【]+)|■・(?<examples>[^■◆【]+)|◆?(?<additionals>【[^■◆【]+))?/g,
-      other
-    );
+    const extracted = extractRepeat(/(?:◆(?<remarks>[^■◆【]+)|■・(?<examples>[^■◆【]+)|◆?(?<additionals>【[^■◆【]+))?/g, other);
     const result: { remarks: string[]; examples: Example[]; additionals: Additional[] } = {
       remarks: extracted.remarks,
       examples: [],
