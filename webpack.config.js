@@ -33,4 +33,5 @@ module.exports = {
       patterns: [{ from: "./static" }],
     }),
   ],
+  devtool: "inline-source-map",
 };

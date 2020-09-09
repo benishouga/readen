@@ -29,8 +29,7 @@ export class Actions {
   }
 
   async deleteDatabase(state: State) {
-    await deleteDatabase();
-    console.log("reseted");
+    deleteDatabase();
     return produce(state, (draft) => {
       draft.reseted = true;
     });
@@ -52,14 +51,29 @@ export class Actions {
     const db = await dbOpeningPromise;
     const text = await readFileText(file);
     const converter = new Converter();
-    await text
+    const tasks = text
       .split("\n")
       .filter((line) => line)
       .map((line) => async () => {
-        const row = converter.parseRow(line);
-        await db.add("dictionary", row);
-      })
-      .reduce((promise, next) => promise.then(next), Promise.resolve());
+        const newRow = converter.parseRow(line);
+        const transaction = db.transaction("dictionary", "readwrite");
+        const store = transaction.store;
+        const row = await store.get(newRow.word);
+        if (row) {
+          row.meanings.push(newRow.meaning);
+          await store.put(row);
+        } else {
+          await store.add({ word: newRow.word, meanings: [newRow.meaning] });
+        }
+      });
+
+    for (let i = 0; i < tasks.length; i++) {
+      const task = tasks[i];
+      await task();
+      state = yield produce(state, (draft) => {
+        draft.count = draft.count + 1;
+      });
+    }
 
     return produce(state, (draft) => {
       draft.loading = false;

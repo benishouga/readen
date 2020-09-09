@@ -20,14 +20,17 @@ export function OptionsApp() {
     init();
   }, []);
 
-  console.log("count", count);
+  if (reseted) {
+    return <>please reload</>;
+  }
+
   return (
     <div>
-      {reseted ? "please reload" : ""}
+      <br />
       <button type="button" onClick={deleteDatabase}>
         reset
       </button>
-      {loading ? "loading..." : ""}
+      {loading ? `loading... ${count}` : ""}
       {!count ? (
         <p>
           eijiro: <input type="file" onChange={(e) => handler(e.target.files)} />
