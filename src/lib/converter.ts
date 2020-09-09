@@ -29,7 +29,7 @@ export class Converter {
     await text
       .split("\n")
       .filter((line) => line)
-      .map((line) => async () => this.addRow(line))
+      .map((line) => () => this.addRow(line))
       .reduce((promise, next) => promise.then(next), Promise.resolve());
     return { dictionary: this.dictionary, indexes: this.indexes };
   }
@@ -49,6 +49,16 @@ export class Converter {
     if (lower !== word) {
       this.pushIndex(lower, word);
     }
+  }
+
+  public parseRow(line: string) {
+    line = line.slice(1);
+    const index = line.indexOf(":");
+    const wordPart = line.slice(0, index).trim();
+    const meaningPart = line.slice(index + 1).trim();
+    const { word, group, type } = this.parseWorkdPart(wordPart);
+    const { text, tags, links, remarks, examples, additionals, linkFrom } = this.parseMeaningPart(meaningPart);
+    return { word, meaning: { text, type, group, links, tags, examples, remarks, additionals } };
   }
 
   private getHolder(word: string) {
