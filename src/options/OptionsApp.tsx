@@ -1,6 +1,5 @@
 import React from "react";
-import { Converter } from "../lib/converter";
-import { AppProvider, useAppContext } from "../store";
+import { useAppContext } from "../store";
 import { useEffect } from "react";
 
 export function OptionsApp() {
